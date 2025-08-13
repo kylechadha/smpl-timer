@@ -21,7 +21,6 @@
             font-family: var(--font-stack);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #90ccf4;
@@ -29,7 +28,8 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
-            padding: 20px;
+            margin: 0;
+            overflow-x: hidden;
         }
 
         /* Theme Classes */
@@ -66,6 +66,11 @@
             color: white;
             max-width: 600px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
         }
 
         body.gin .container,
@@ -74,12 +79,7 @@
         }
 
         .timer-display {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10;
+            margin-bottom: 80px;
         }
 
         .lap-time {
@@ -103,14 +103,10 @@
         }
 
         .controls {
-            position: fixed;
-            top: calc(50% + 120px);
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
             gap: 15px;
             justify-content: center;
-            z-index: 10;
+            margin-bottom: 80px;
         }
 
         button {
@@ -169,15 +165,11 @@
         }
 
         .splits-section {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            max-height: 30vh;
-            overflow-y: auto;
             display: none;
             opacity: 0;
             transition: opacity var(--transition-speed) ease;
+            max-height: 35vh;
+            overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
         }
@@ -207,15 +199,15 @@
 
         .splits-table {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             margin: 0 auto;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 200;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
         }
 
         body.gin .splits-table,
         body.frost .splits-table {
-            color: rgba(0, 0, 0, 0.4);
+            color: rgba(0, 0, 0, 0.6);
         }
 
         .splits-header {
@@ -462,9 +454,6 @@
             .total-time {
                 font-size: 1.4rem;
             }
-            .controls {
-                top: calc(50% + 80px);
-            }
         }
 
         @media (max-width: 480px) {
@@ -473,9 +462,6 @@
             }
             .total-time {
                 font-size: 1.2rem;
-            }
-            .controls {
-                top: calc(50% + 60px);
             }
 
             button {
