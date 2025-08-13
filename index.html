@@ -594,14 +594,51 @@
     <script>
         // Theme management
         const themes = ['biscay', 'sky-blue', 'tangerine', 'gin', 'slate', 'charcoal', 'frost'];
-        let currentThemeIndex = localStorage.getItem('smpl-timer-theme') ? parseInt(localStorage.getItem('smpl-timer-theme')) : 1;
+        let currentThemeIndex = 1; // Default to sky-blue
         
-        function applyTheme() {
+        // Storage helpers with Chrome storage priority and localStorage fallback
+        function saveTheme(index) {
+            currentThemeIndex = index;
             document.body.className = themes[currentThemeIndex];
-            localStorage.setItem('smpl-timer-theme', currentThemeIndex);
+            
+            // Try Chrome storage first
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+                chrome.storage.sync.set({ 'smpl-timer-theme': index });
+            }
+            // Always save to localStorage as fallback
+            localStorage.setItem('smpl-timer-theme', index);
         }
         
-        applyTheme();
+        function loadTheme() {
+            // Try Chrome storage first
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+                chrome.storage.sync.get(['smpl-timer-theme'], function(result) {
+                    if (result['smpl-timer-theme'] !== undefined) {
+                        currentThemeIndex = result['smpl-timer-theme'];
+                        document.body.className = themes[currentThemeIndex];
+                    } else {
+                        // Fall back to localStorage
+                        const stored = localStorage.getItem('smpl-timer-theme');
+                        if (stored !== null) {
+                            currentThemeIndex = parseInt(stored);
+                            document.body.className = themes[currentThemeIndex];
+                        } else {
+                            document.body.className = themes[currentThemeIndex];
+                        }
+                    }
+                });
+            } else {
+                // No Chrome storage, use localStorage
+                const stored = localStorage.getItem('smpl-timer-theme');
+                if (stored !== null) {
+                    currentThemeIndex = parseInt(stored);
+                }
+                document.body.className = themes[currentThemeIndex];
+            }
+        }
+        
+        // Initialize theme
+        loadTheme();
 
         // Timer state
         let startTime = 0;
@@ -801,12 +838,10 @@
                     stopTimer();
                     break;
                 case 'arrowleft':
-                    currentThemeIndex = currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1;
-                    applyTheme();
+                    saveTheme(currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1);
                     break;
                 case 'arrowright':
-                    currentThemeIndex = currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1;
-                    applyTheme();
+                    saveTheme(currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1);
                     break;
                 case '?':
                     modalBackdrop.classList.add('visible');
