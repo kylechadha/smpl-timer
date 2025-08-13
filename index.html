@@ -331,6 +331,37 @@
         body.frost .help-icon:hover {
             background: rgba(0, 0, 0, 0.15);
         }
+        
+        .theme-pill {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body.gin .theme-pill,
+        body.frost .theme-pill {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+        
+        .theme-pill.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
 
         .modal-backdrop {
             position: fixed;
@@ -407,11 +438,28 @@
         }
 
         .shortcut {
-            display: flex;
+            display: grid;
+            grid-template-columns: 90px auto;
             align-items: center;
+            gap: 15px;
             margin-bottom: 20px;
             font-size: 0.95rem;
             color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .key-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .key-wrapper.key-group {
+            gap: 4px;
+        }
+        
+        .key-wrapper.key-wide-wrapper {
+            justify-content: center;
         }
 
         body.biscay .shortcut,
@@ -422,25 +470,29 @@
 
         .key {
             background: rgba(0, 0, 0, 0.08);
-            padding: 8px 14px;
+            padding: 8px 0;
             border-radius: 8px;
-            margin-right: 18px;
             font-weight: 500;
             color: rgba(0, 0, 0, 0.8);
-            min-width: 86px;
-            text-align: center;
             font-size: 0.85rem;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                0 1px 2px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
         
-        .key-group {
-            display: inline-flex;
-            gap: 4px;
-            margin-right: 18px;
+        .key.wide {
+            width: 76px;
         }
         
         .key-group .key {
-            min-width: 41px;
-            margin-right: 0;
+            width: 36px;
         }
 
         body.biscay .key,
@@ -448,6 +500,10 @@
         body.slate .key {
             background: rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                0 1px 2px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
         
         body.biscay .key-group .key,
@@ -457,21 +513,26 @@
         }
 
         .close-modal {
-            position: absolute;
+            position: absolute !important;
             top: 37px;
             right: 40px;
             background: none;
             border: none;
             color: rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            padding: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
+            padding: 0;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            min-height: 32px !important;
+            max-width: 32px !important;
+            max-height: 32px !important;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         body.biscay .close-modal,
@@ -594,6 +655,10 @@
     </div>
 
     <div class="help-icon" id="helpBtn">?</div>
+    
+    <div class="theme-pill" id="themePill">
+        <span id="themeName"></span>
+    </div>
 
     <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal">
@@ -605,27 +670,27 @@
             <h2>Keyboard Shortcuts</h2>
             <div class="shortcuts">
                 <div class="shortcut">
-                    <span class="key">S</span>
+                    <div class="key-wrapper"><span class="key">S</span></div>
                     <span>Start / pause timer</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">Space</span>
+                    <div class="key-wrapper key-wide-wrapper"><span class="key wide">Space</span></div>
                     <span>Start / pause timer</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">L</span>
+                    <div class="key-wrapper"><span class="key">L</span></div>
                     <span>Record lap</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">R</span>
+                    <div class="key-wrapper"><span class="key">R</span></div>
                     <span>Reset timer</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key-group"><span class="key">←</span><span class="key">→</span></span>
+                    <div class="key-wrapper key-group"><span class="key">←</span><span class="key">→</span></div>
                     <span>Change theme</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">?</span>
+                    <div class="key-wrapper"><span class="key">?</span></div>
                     <span>Show shortcuts</span>
                 </div>
             </div>
@@ -682,12 +747,34 @@
         
         // Theme management
         const themes = ['biscay', 'sky-blue', 'tangerine', 'gin', 'slate', 'charcoal', 'frost'];
+        const themeNames = ['Biscay', 'Sky Blue', 'Tangerine', 'Gin', 'Slate', 'Charcoal', 'Frost'];
         let currentThemeIndex = 1; // Default to sky-blue
+        let themePillTimeout = null;
         
         // Storage helpers with Chrome storage priority and localStorage fallback
-        function saveTheme(index) {
+        function saveTheme(index, showPill = false) {
             currentThemeIndex = index;
             document.body.className = themes[currentThemeIndex];
+            
+            // Show theme pill when switching
+            if (showPill) {
+                const themePill = document.getElementById('themePill');
+                const themeName = document.getElementById('themeName');
+                themeName.textContent = themeNames[currentThemeIndex];
+                
+                // Clear any existing timeout
+                if (themePillTimeout) {
+                    clearTimeout(themePillTimeout);
+                }
+                
+                // Show pill
+                themePill.classList.add('visible');
+                
+                // Hide after 1.5 seconds
+                themePillTimeout = setTimeout(() => {
+                    themePill.classList.remove('visible');
+                }, 1500);
+            }
             
             // Try Chrome storage first
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
@@ -953,10 +1040,10 @@
                     stopTimer();
                     break;
                 case 'arrowleft':
-                    saveTheme(currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1);
+                    saveTheme(currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1, true);
                     break;
                 case 'arrowright':
-                    saveTheme(currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1);
+                    saveTheme(currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1, true);
                     break;
                 case '?':
                     modalBackdrop.classList.add('visible');
