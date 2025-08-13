@@ -594,11 +594,11 @@
     <script>
         // Theme management
         const themes = ['biscay', 'sky-blue', 'tangerine', 'gin', 'slate', 'charcoal', 'frost'];
-        let currentThemeIndex = localStorage.getItem('theme') ? parseInt(localStorage.getItem('theme')) : 1;
+        let currentThemeIndex = localStorage.getItem('smpl-timer-theme') ? parseInt(localStorage.getItem('smpl-timer-theme')) : 1;
         
         function applyTheme() {
             document.body.className = themes[currentThemeIndex];
-            localStorage.setItem('theme', currentThemeIndex);
+            localStorage.setItem('smpl-timer-theme', currentThemeIndex);
         }
         
         applyTheme();
