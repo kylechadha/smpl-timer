@@ -9,11 +9,11 @@ A minimal stopwatch that displays the current lap time as the _primary_ timer, w
 - **Splits table**: Records lap number, duration, and cumulative time for each lap
 - **7 themes**: Biscay, Sky Blue, Tangerine, Gin, Slate, Charcoal, and Frost
 - **Keyboard shortcuts**:
-  - `Space` - Start/Pause
+  - `S` or `Space` - Start/Pause
   - `L` - Lap
-  - `R` or `S` - Stop/Reset
+  - `R` - Reset
   - `←` `→` - Change theme
-  - `?` - Show shortcuts
+  - `?` - Show/hide shortcuts
 
 ## Other smpl projects
 
