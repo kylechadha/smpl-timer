@@ -26,3 +26,8 @@ A minimal stopwatch web application that prioritizes displaying the current lap 
 ## Testing
 
 Tests use Playwright for screenshot capture and are located in `tests/` directory. These are for development only and not required for the application to function.
+
+## Pull Request Guidelines
+
+- Never include "Test Plan" sections in PRs
+- Keep PR descriptions concise and focused on what changed
