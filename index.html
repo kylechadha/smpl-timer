@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>smpl timer</title>
+    <style>
+        :root {
+            --font-stack: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            --transition-speed: 0.3s;
+            --button-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #90ccf4;
+            transition: background var(--transition-speed) ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            padding: 20px;
+        }
+
+        /* Theme Classes */
+        body.biscay {
+            background: linear-gradient(135deg, #2e3c56 0%, #364564 100%);
+        }
+
+        body.sky-blue {
+            background: linear-gradient(135deg, #90ccf4 0%, #a8d5f7 100%);
+        }
+
+        body.tangerine {
+            background: linear-gradient(135deg, #f4976c 0%, #f7a882 100%);
+        }
+
+        body.gin {
+            background: #d7e8ba;
+        }
+
+        body.slate {
+            background: #64748b;
+        }
+
+        body.charcoal {
+            background: #1e293b;
+        }
+
+        body.frost {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        body.gin .container,
+        body.frost .container {
+            color: #1e293b;
+        }
+
+        .timer-display {
+            margin-bottom: 60px;
+        }
+
+        .lap-time {
+            font-size: 8rem;
+            font-weight: 200;
+            line-height: 1;
+            margin-bottom: 15px;
+            letter-spacing: -0.03em;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .total-time {
+            font-size: 1.5rem;
+            font-weight: 200;
+            opacity: 0.7;
+            letter-spacing: 0.02em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        button {
+            font-family: var(--font-stack);
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--button-radius);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        body.gin button,
+        body.frost button {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        body.gin button:hover,
+        body.frost button:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.primary {
+            background: rgba(255, 255, 255, 0.3);
+            min-width: 120px;
+        }
+
+        body.gin button.primary,
+        body.frost button.primary {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        button.primary:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        body.gin button.primary:hover,
+        body.frost button.primary:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .splits-section {
+            display: none;
+            margin-top: 60px;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .splits-section.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .splits-table {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 200;
+        }
+
+        body.gin .splits-table,
+        body.frost .splits-table {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .splits-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+        }
+
+        body.gin .splits-header,
+        body.frost .splits-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .split-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1rem;
+        }
+
+        body.gin .split-row,
+        body.frost .split-row {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .help-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        body.gin .help-icon,
+        body.frost .help-icon {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .help-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        body.gin .help-icon:hover,
+        body.frost .help-icon:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .modal-backdrop.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            height: 100%;
+            width: 320px;
+            max-width: 90vw;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            transition: right var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px 30px;
+            overflow-y: auto;
+        }
+
+        body.gin .modal,
+        body.frost .modal {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        body.biscay .modal,
+        body.charcoal .modal {
+            background: rgba(30, 30, 30, 0.85);
+        }
+
+        body.slate .modal {
+            background: rgba(50, 50, 60, 0.85);
+        }
+
+        .modal-backdrop.visible .modal {
+            right: 0;
+        }
+
+        .modal h2 {
+            color: rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
+            font-weight: 500;
+            font-size: 1.3rem;
+            letter-spacing: 0.02em;
+        }
+
+        body.biscay .modal h2,
+        body.charcoal .modal h2,
+        body.slate .modal h2 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .shortcuts {
+            text-align: left;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        body.biscay .shortcut,
+        body.charcoal .shortcut,
+        body.slate .shortcut {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .key {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-right: 15px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.8);
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        body.biscay .key,
+        body.charcoal .key,
+        body.slate .key {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            padding: 5px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        body.biscay .close-modal,
+        body.charcoal .close-modal,
+        body.slate .close-modal {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .close-modal:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        body.biscay .close-modal:hover,
+        body.charcoal .close-modal:hover,
+        body.slate .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 600px) {
+            .lap-time {
+                font-size: 5rem;
+            }
+
+            .total-time {
+                font-size: 1.2rem;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body class="sky-blue">
+    <div class="container">
+        <div class="timer-display">
+            <div class="lap-time" id="lapTime">00:00</div>
+            <div class="total-time" id="totalTime">Total: 00:00</div>
+        </div>
+
+        <div class="controls">
+            <button class="primary" id="startPauseBtn">START</button>
+            <button id="lapBtn" disabled>LAP</button>
+            <button id="stopBtn" disabled>STOP</button>
+        </div>
+
+        <div class="splits-section" id="splitsSection">
+            <div class="splits-table">
+                <div class="splits-header">
+                    <div>Lap</div>
+                    <div>Duration</div>
+                    <div>Total</div>
+                </div>
+                <div id="splitsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="help-icon" id="helpBtn">?</div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h2>Keyboard Shortcuts</h2>
+            <div class="shortcuts">
+                <div class="shortcut">
+                    <span class="key">Space</span>
+                    <span>Start / Pause timer</span>
+                </div>
+                <div class="shortcut">
+                    <span class="key">L</span>
+                    <span>Record lap</span>
+                </div>
+                <div class="shortcut">
+                    <span class="key">R / S</span>
+                    <span>Stop / Reset timer</span>
+                </div>
+                <div class="shortcut">
+                    <span class="key">← →</span>
+                    <span>Change theme</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme management
+        const themes = ['biscay', 'sky-blue', 'tangerine', 'gin', 'slate', 'charcoal', 'frost'];
+        let currentThemeIndex = localStorage.getItem('theme') ? parseInt(localStorage.getItem('theme')) : 1;
+        
+        function applyTheme() {
+            document.body.className = themes[currentThemeIndex];
+            localStorage.setItem('theme', currentThemeIndex);
+        }
+        
+        applyTheme();
+
+        // Timer state
+        let startTime = 0;
+        let lapStartTime = 0;
+        let elapsedTime = 0;
+        let lapElapsedTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let laps = [];
+
+        // DOM elements
+        const lapTimeEl = document.getElementById('lapTime');
+        const totalTimeEl = document.getElementById('totalTime');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const splitsSection = document.getElementById('splitsSection');
+        const splitsList = document.getElementById('splitsList');
+        const helpBtn = document.getElementById('helpBtn');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const closeModal = document.getElementById('closeModal');
+
+        // Format time
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const centiseconds = Math.floor((ms % 1000) / 10);
+            
+            if (minutes > 0) {
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                return `${String(seconds).padStart(2, '0')}:${String(centiseconds).padStart(2, '0')}`;
+            }
+        }
+
+        // Update display
+        function updateDisplay() {
+            const now = Date.now();
+            if (isRunning) {
+                elapsedTime = now - startTime;
+                lapElapsedTime = now - lapStartTime;
+            }
+            
+            lapTimeEl.textContent = formatTime(lapElapsedTime);
+            totalTimeEl.textContent = `Total: ${formatTime(elapsedTime)}`;
+        }
+
+        // Start/Pause timer
+        function toggleTimer() {
+            if (isRunning) {
+                // Pause
+                isRunning = false;
+                clearInterval(timerInterval);
+                startPauseBtn.textContent = 'RESUME';
+                lapBtn.disabled = true;
+            } else {
+                // Start/Resume
+                const now = Date.now();
+                startTime = now - elapsedTime;
+                lapStartTime = now - lapElapsedTime;
+                isRunning = true;
+                timerInterval = setInterval(updateDisplay, 10);
+                startPauseBtn.textContent = 'PAUSE';
+                lapBtn.disabled = false;
+                stopBtn.disabled = false;
+            }
+        }
+
+        // Record lap
+        function recordLap() {
+            if (!isRunning) return;
+            
+            laps.push({
+                number: laps.length + 1,
+                duration: lapElapsedTime,
+                total: elapsedTime
+            });
+            
+            // Reset lap timer
+            lapStartTime = Date.now();
+            lapElapsedTime = 0;
+            
+            // Update display
+            updateDisplay();
+            updateSplits();
+            
+            // Show splits section
+            if (laps.length === 1) {
+                splitsSection.classList.add('visible');
+            }
+        }
+
+        // Update splits display
+        function updateSplits() {
+            splitsList.innerHTML = laps.map(lap => `
+                <div class="split-row">
+                    <div>${lap.number}</div>
+                    <div>${formatTime(lap.duration)}</div>
+                    <div>${formatTime(lap.total)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Stop/Reset timer
+        function stopTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            startTime = 0;
+            lapStartTime = 0;
+            elapsedTime = 0;
+            lapElapsedTime = 0;
+            laps = [];
+            
+            startPauseBtn.textContent = 'START';
+            lapBtn.disabled = true;
+            stopBtn.disabled = true;
+            
+            updateDisplay();
+            splitsList.innerHTML = '';
+            splitsSection.classList.remove('visible');
+        }
+
+        // Event listeners
+        startPauseBtn.addEventListener('click', toggleTimer);
+        lapBtn.addEventListener('click', recordLap);
+        stopBtn.addEventListener('click', stopTimer);
+
+        // Modal
+        helpBtn.addEventListener('click', () => {
+            modalBackdrop.classList.add('visible');
+        });
+
+        closeModal.addEventListener('click', () => {
+            modalBackdrop.classList.remove('visible');
+        });
+
+        modalBackdrop.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) {
+                modalBackdrop.classList.remove('visible');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when modal is open
+            if (modalBackdrop.classList.contains('visible')) {
+                if (e.key === 'Escape') {
+                    modalBackdrop.classList.remove('visible');
+                }
+                return;
+            }
+            
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleTimer();
+                    break;
+                case 'l':
+                case 'L':
+                    recordLap();
+                    break;
+                case 'r':
+                case 'R':
+                case 's':
+                case 'S':
+                    stopTimer();
+                    break;
+                case 'ArrowLeft':
+                    currentThemeIndex = currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1;
+                    applyTheme();
+                    break;
+                case 'ArrowRight':
+                    currentThemeIndex = currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1;
+                    applyTheme();
+                    break;
+                case '?':
+                    modalBackdrop.classList.add('visible');
+                    break;
+            }
+        });
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
