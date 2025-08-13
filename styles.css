@@ -551,6 +551,9 @@ body.slate .close-modal:hover {
     .lap-time {
         font-size: 14rem;
     }
+    .lap-ms {
+        font-size: 7rem;
+    }
     .total-time {
         font-size: 2rem;
     }
@@ -559,6 +562,9 @@ body.slate .close-modal:hover {
 @media (min-width: 2560px) {
     .lap-time {
         font-size: 16rem;
+    }
+    .lap-ms {
+        font-size: 8rem;
     }
     .total-time {
         font-size: 2.2rem;
@@ -569,6 +575,9 @@ body.slate .close-modal:hover {
     .lap-time {
         font-size: 18rem;
     }
+    .lap-ms {
+        font-size: 9rem;
+    }
     .total-time {
         font-size: 2.4rem;
     }
@@ -578,6 +587,9 @@ body.slate .close-modal:hover {
     .lap-time {
         font-size: 7rem;
     }
+    .lap-ms {
+        font-size: 3.5rem;
+    }
     .total-time {
         font-size: 1.4rem;
     }
@@ -586,6 +598,9 @@ body.slate .close-modal:hover {
 @media (max-width: 480px) {
     .lap-time {
         font-size: 5rem;
+    }
+    .lap-ms {
+        font-size: 2.5rem;
     }
     .total-time {
         font-size: 1.2rem;
