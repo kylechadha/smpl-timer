@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>smpl timer</title>
+    <title>Smpl Timer</title>
     <style>
         :root {
             --font-stack: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
@@ -21,7 +21,6 @@
             font-family: var(--font-stack);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #90ccf4;
@@ -29,7 +28,8 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
-            padding: 20px;
+            margin: 0;
+            overflow: hidden;
         }
 
         /* Theme Classes */
@@ -64,8 +64,9 @@
         .container {
             text-align: center;
             color: white;
-            max-width: 600px;
             width: 100%;
+            padding-top: 30vh;
+            min-height: 100vh;
         }
 
         body.gin .container,
@@ -74,12 +75,7 @@
         }
 
         .timer-display {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10;
+            margin-bottom: 80px;
         }
 
         .lap-time {
@@ -88,9 +84,10 @@
             line-height: 1;
             margin-bottom: 20px;
             letter-spacing: -0.02em;
-            transition: all var(--transition-speed) ease;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "tnum";
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .total-time {
@@ -100,17 +97,15 @@
             letter-spacing: 0.02em;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "tnum";
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .controls {
-            position: fixed;
-            top: calc(50% + 120px);
-            left: 50%;
-            transform: translateX(-50%);
             display: flex;
             gap: 15px;
             justify-content: center;
-            z-index: 10;
+            margin-bottom: 80px;
         }
 
         button {
@@ -127,12 +122,22 @@
             transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             letter-spacing: 0.02em;
             text-transform: uppercase;
+            outline: none;
+        }
+        
+        button:focus-visible {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
         }
 
         body.gin button,
         body.frost button {
             background: rgba(0, 0, 0, 0.1);
             color: #1e293b;
+        }
+        
+        body.gin button:focus-visible,
+        body.frost button:focus-visible {
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
@@ -145,8 +150,15 @@
             background: rgba(0, 0, 0, 0.15);
         }
 
-        button:active {
-            transform: translateY(0);
+        button:active,
+        button.pressed {
+            transform: translateY(0) !important;
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        body.gin button.pressed,
+        body.frost button.pressed {
+            background: rgba(0, 0, 0, 0.2) !important;
         }
 
         button.primary {
@@ -169,17 +181,16 @@
         }
 
         .splits-section {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            max-height: 30vh;
-            overflow-y: auto;
             display: none;
             opacity: 0;
             transition: opacity var(--transition-speed) ease;
+            max-height: 30vh;
+            overflow-y: auto;
+            overflow-x: hidden;
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+            width: 100%;
+            justify-content: center;
         }
 
         .splits-section::-webkit-scrollbar {
@@ -201,26 +212,24 @@
         }
 
         .splits-section.visible {
-            display: block;
+            display: flex;
             opacity: 1;
         }
 
         .splits-table {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 200;
+            width: 750px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
         }
 
         body.gin .splits-table,
         body.frost .splits-table {
-            color: rgba(0, 0, 0, 0.4);
+            color: rgba(0, 0, 0, 0.6);
         }
 
         .splits-header {
             display: grid;
-            grid-template-columns: 1fr 2fr 2fr;
+            grid-template-columns: 1fr 1fr 1fr;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             font-weight: 500;
@@ -228,6 +237,7 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             opacity: 0.7;
+            text-align: center;
         }
 
         body.gin .splits-header,
@@ -237,12 +247,13 @@
 
         .split-row {
             display: grid;
-            grid-template-columns: 1fr 2fr 2fr;
+            grid-template-columns: 1fr 1fr 1fr;
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 1rem;
             font-variant-numeric: tabular-nums;
             font-feature-settings: "tnum";
+            text-align: center;
         }
 
         body.gin .split-row,
@@ -266,6 +277,7 @@
             backdrop-filter: blur(10px);
             font-size: 1.2rem;
             color: white;
+            will-change: transform;
         }
 
         body.gin .help-icon,
@@ -309,16 +321,17 @@
             top: 0;
             right: -320px;
             height: 100%;
-            width: 320px;
+            width: 380px;
             max-width: 90vw;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
             transition: right var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 40px 30px;
+            padding: 40px 50px;
             overflow-y: auto;
             z-index: 1001;
+            border-radius: 0 0 0 20px;
         }
 
         body.gin .modal,
@@ -341,7 +354,7 @@
 
         .modal h2 {
             color: rgba(0, 0, 0, 0.8);
-            margin-bottom: 30px;
+            margin-bottom: 45px;
             font-weight: 500;
             font-size: 1.3rem;
             letter-spacing: 0.02em;
@@ -375,12 +388,23 @@
             background: rgba(0, 0, 0, 0.08);
             padding: 8px 14px;
             border-radius: 8px;
-            margin-right: 15px;
+            margin-right: 18px;
             font-weight: 500;
             color: rgba(0, 0, 0, 0.8);
-            min-width: 80px;
+            min-width: 86px;
             text-align: center;
             font-size: 0.85rem;
+        }
+        
+        .key-group {
+            display: inline-flex;
+            gap: 4px;
+            margin-right: 18px;
+        }
+        
+        .key-group .key {
+            min-width: 41px;
+            margin-right: 0;
         }
 
         body.biscay .key,
@@ -389,19 +413,24 @@
             background: rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.9);
         }
+        
+        body.biscay .key-group .key,
+        body.charcoal .key-group .key,
+        body.slate .key-group .key {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
         .close-modal {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 37px;
+            right: 40px;
             background: none;
             border: none;
-            font-size: 1.8rem;
             color: rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            padding: 5px;
-            width: 35px;
-            height: 35px;
+            padding: 8px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -416,15 +445,14 @@
         }
 
         .close-modal:hover {
-            background: rgba(0, 0, 0, 0.08);
-            color: rgba(0, 0, 0, 0.7);
+            transform: scale(1.1);
+            background: rgba(0, 0, 0, 0.05);
         }
-
+        
         body.biscay .close-modal:hover,
         body.charcoal .close-modal:hover,
         body.slate .close-modal:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Responsive scaling */
@@ -462,9 +490,6 @@
             .total-time {
                 font-size: 1.4rem;
             }
-            .controls {
-                top: calc(50% + 80px);
-            }
         }
 
         @media (max-width: 480px) {
@@ -473,9 +498,6 @@
             }
             .total-time {
                 font-size: 1.2rem;
-            }
-            .controls {
-                top: calc(50% + 60px);
             }
 
             button {
@@ -499,7 +521,7 @@
         <div class="controls">
             <button class="primary" id="startPauseBtn">START</button>
             <button id="lapBtn" disabled>LAP</button>
-            <button id="stopBtn" disabled>STOP</button>
+            <button id="stopBtn" disabled>RESET</button>
         </div>
 
         <div class="splits-section" id="splitsSection">
@@ -518,24 +540,36 @@
 
     <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal">
-            <button class="close-modal" id="closeModal">&times;</button>
+            <button class="close-modal" id="closeModal">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L13 13M1 13L13 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
             <h2>Keyboard Shortcuts</h2>
             <div class="shortcuts">
                 <div class="shortcut">
+                    <span class="key">S</span>
+                    <span>Start / pause timer</span>
+                </div>
+                <div class="shortcut">
                     <span class="key">Space</span>
-                    <span>Start / Pause timer</span>
+                    <span>Start / pause timer</span>
                 </div>
                 <div class="shortcut">
                     <span class="key">L</span>
                     <span>Record lap</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">R / S</span>
-                    <span>Stop / Reset timer</span>
+                    <span class="key">R</span>
+                    <span>Reset timer</span>
                 </div>
                 <div class="shortcut">
-                    <span class="key">← →</span>
+                    <span class="key-group"><span class="key">←</span><span class="key">→</span></span>
                     <span>Change theme</span>
+                </div>
+                <div class="shortcut">
+                    <span class="key">?</span>
+                    <span>Show shortcuts</span>
                 </div>
             </div>
         </div>
@@ -558,7 +592,7 @@
         let lapStartTime = 0;
         let elapsedTime = 0;
         let lapElapsedTime = 0;
-        let timerInterval = null;
+        let animationFrame = null;
         let isRunning = false;
         let laps = [];
 
@@ -574,30 +608,36 @@
         const modalBackdrop = document.getElementById('modalBackdrop');
         const closeModal = document.getElementById('closeModal');
 
-        // Format time
+        // Format time - always show mm:ss
         function formatTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
-            const centiseconds = Math.floor((ms % 1000) / 10);
             
-            if (minutes > 0) {
-                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            } else {
-                return `${String(seconds).padStart(2, '0')}:${String(centiseconds).padStart(2, '0')}`;
-            }
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
-        // Update display
+        // Update display using requestAnimationFrame for smooth performance
         function updateDisplay() {
-            const now = Date.now();
             if (isRunning) {
+                const now = Date.now();
                 elapsedTime = now - startTime;
                 lapElapsedTime = now - lapStartTime;
+                
+                // Update both displays with the same calculated values
+                const lapText = formatTime(lapElapsedTime);
+                const totalText = `Total: ${formatTime(elapsedTime)}`;
+                
+                // Update DOM only if values changed to prevent unnecessary repaints
+                if (lapTimeEl.textContent !== lapText) {
+                    lapTimeEl.textContent = lapText;
+                }
+                if (totalTimeEl.textContent !== totalText) {
+                    totalTimeEl.textContent = totalText;
+                }
+                
+                animationFrame = requestAnimationFrame(updateDisplay);
             }
-            
-            lapTimeEl.textContent = formatTime(lapElapsedTime);
-            totalTimeEl.textContent = `Total: ${formatTime(elapsedTime)}`;
         }
 
         // Start/Pause timer
@@ -605,7 +645,7 @@
             if (isRunning) {
                 // Pause
                 isRunning = false;
-                clearInterval(timerInterval);
+                cancelAnimationFrame(animationFrame);
                 startPauseBtn.textContent = 'RESUME';
                 lapBtn.disabled = true;
             } else {
@@ -614,7 +654,7 @@
                 startTime = now - elapsedTime;
                 lapStartTime = now - lapElapsedTime;
                 isRunning = true;
-                timerInterval = setInterval(updateDisplay, 10);
+                updateDisplay();
                 startPauseBtn.textContent = 'PAUSE';
                 lapBtn.disabled = false;
                 stopBtn.disabled = false;
@@ -660,7 +700,7 @@
         // Stop/Reset timer
         function stopTimer() {
             isRunning = false;
-            clearInterval(timerInterval);
+            cancelAnimationFrame(animationFrame);
             startTime = 0;
             lapStartTime = 0;
             elapsedTime = 0;
@@ -671,7 +711,8 @@
             lapBtn.disabled = true;
             stopBtn.disabled = true;
             
-            updateDisplay();
+            lapTimeEl.textContent = formatTime(0);
+            totalTimeEl.textContent = `Total: ${formatTime(0)}`;
             splitsList.innerHTML = '';
             splitsSection.classList.remove('visible');
         }
@@ -696,36 +737,58 @@
             }
         });
 
+        // Add visual feedback for button press
+        function pressButton(button) {
+            if (!button) return;
+            // Don't check disabled state for start/pause button since it's never disabled
+            if (button !== startPauseBtn && button.disabled) return;
+            
+            // Force reflow to ensure the animation triggers
+            button.classList.remove('pressed');
+            void button.offsetWidth;
+            button.classList.add('pressed');
+            
+            setTimeout(() => {
+                button.classList.remove('pressed');
+            }, 150);
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Don't trigger shortcuts when modal is open
+            // Handle modal-specific shortcuts
             if (modalBackdrop.classList.contains('visible')) {
-                if (e.key === 'Escape') {
+                if (e.key === 'Escape' || e.key === '?') {
                     modalBackdrop.classList.remove('visible');
                 }
                 return;
             }
             
-            switch(e.key) {
+            const key = e.key.toLowerCase();
+            
+            switch(key) {
                 case ' ':
                     e.preventDefault();
+                    pressButton(startPauseBtn);
+                    toggleTimer();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    pressButton(startPauseBtn);
                     toggleTimer();
                     break;
                 case 'l':
-                case 'L':
+                    pressButton(lapBtn);
                     recordLap();
                     break;
                 case 'r':
-                case 'R':
-                case 's':
-                case 'S':
+                    pressButton(stopBtn);
                     stopTimer();
                     break;
-                case 'ArrowLeft':
+                case 'arrowleft':
                     currentThemeIndex = currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1;
                     applyTheme();
                     break;
-                case 'ArrowRight':
+                case 'arrowright':
                     currentThemeIndex = currentThemeIndex === themes.length - 1 ? 0 : currentThemeIndex + 1;
                     applyTheme();
                     break;
@@ -736,7 +799,8 @@
         });
 
         // Initialize display
-        updateDisplay();
+        lapTimeEl.textContent = formatTime(0);
+        totalTimeEl.textContent = `Total: ${formatTime(0)}`;
     </script>
 </body>
 </html>

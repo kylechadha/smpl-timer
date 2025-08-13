@@ -1,6 +1,6 @@
 # smpl timer
 
-A stopwatch that displays the current lap time as the primary timer, with total elapsed time shown below.
+A minimal stopwatch that displays the current lap time as the _primary_ timer, with total elapsed time shown below. This is the opposite of how most stopwatches do it, and perfect for timing reading sessions or other use cases where the current lap matters more than the total.
 
 ## Features
 
