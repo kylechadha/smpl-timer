@@ -153,10 +153,10 @@ function loadTheme() {
 // Initialize theme
 loadTheme();
 
-// Timer state
-let startTime = 0;
+// Stopwatch state
+let stopwatchStartTime = 0;
 let lapStartTime = 0;
-let elapsedTime = 0;
+let stopwatchElapsedTime = 0;
 let lapElapsedTime = 0;
 let animationFrame = null;
 let isRunning = false;
@@ -187,12 +187,12 @@ function formatTime(ms) {
 function updateDisplay() {
     if (isRunning) {
         const now = Date.now();
-        elapsedTime = now - startTime;
+        stopwatchElapsedTime = now - stopwatchStartTime;
         lapElapsedTime = now - lapStartTime;
         
         // Update both displays with the same calculated values
         const lapText = formatTime(lapElapsedTime);
-        const totalText = `Total: ${formatTime(elapsedTime)}`;
+        const totalText = `Total: ${formatTime(stopwatchElapsedTime)}`;
         
         // Update DOM only if values changed to prevent unnecessary repaints
         if (lapTimeEl.textContent !== lapText) {
@@ -206,8 +206,8 @@ function updateDisplay() {
     }
 }
 
-// Start/Pause timer
-async function toggleTimer() {
+// Start/Pause stopwatch
+async function toggleStopwatch() {
     tactileFeedback.trigger('start');
     const playIcon = startPauseBtn.querySelector('.play');
     const pauseIcon = startPauseBtn.querySelector('.pause');
@@ -225,7 +225,7 @@ async function toggleTimer() {
     } else {
         // Start/Resume
         const now = Date.now();
-        startTime = now - elapsedTime;
+        stopwatchStartTime = now - stopwatchElapsedTime;
         lapStartTime = now - lapElapsedTime;
         isRunning = true;
         await wakeLockManager.requestWakeLock();
@@ -247,10 +247,10 @@ function recordLap() {
     laps.push({
         number: laps.length + 1,
         duration: lapElapsedTime,
-        total: elapsedTime
+        total: stopwatchElapsedTime
     });
     
-    // Reset lap timer
+    // Reset lap time
     lapStartTime = Date.now();
     lapElapsedTime = 0;
     
@@ -276,16 +276,16 @@ function updateSplits() {
     `).join('');
 }
 
-// Stop/Reset timer
-async function stopTimer() {
+// Stop/Reset stopwatch
+async function stopStopwatch() {
     tactileFeedback.trigger('reset');
     
     isRunning = false;
     cancelAnimationFrame(animationFrame);
     await wakeLockManager.releaseWakeLock();
-    startTime = 0;
+    stopwatchStartTime = 0;
     lapStartTime = 0;
-    elapsedTime = 0;
+    stopwatchElapsedTime = 0;
     lapElapsedTime = 0;
     laps = [];
     
@@ -306,9 +306,9 @@ async function stopTimer() {
 }
 
 // Event listeners
-startPauseBtn.addEventListener('click', toggleTimer);
+startPauseBtn.addEventListener('click', toggleStopwatch);
 lapBtn.addEventListener('click', recordLap);
-stopBtn.addEventListener('click', stopTimer);
+stopBtn.addEventListener('click', stopStopwatch);
 
 // Modal
 helpBtn.addEventListener('click', () => {
@@ -365,12 +365,12 @@ document.addEventListener('keydown', (e) => {
         case ' ':
             e.preventDefault();
             pressButton(startPauseBtn);
-            toggleTimer();
+            toggleStopwatch();
             break;
         case 's':
             e.preventDefault();
             pressButton(startPauseBtn);
-            toggleTimer();
+            toggleStopwatch();
             break;
         case 'l':
             pressButton(lapBtn);
@@ -378,7 +378,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'r':
             pressButton(stopBtn);
-            stopTimer();
+            stopStopwatch();
             break;
         case 'arrowleft':
             saveTheme(currentThemeIndex === 0 ? themes.length - 1 : currentThemeIndex - 1, true);
