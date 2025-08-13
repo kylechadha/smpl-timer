@@ -128,17 +128,34 @@
             font-family: var(--font-stack);
             font-weight: 500;
             font-size: 1rem;
-            padding: 14px 28px;
+            padding: 14px 24px;
             border: none;
             border-radius: var(--button-radius);
             cursor: pointer;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             backdrop-filter: blur(10px);
-            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             letter-spacing: 0.02em;
             text-transform: uppercase;
             outline: none;
+            position: relative;
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(0) scale(1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 110px;
+            justify-content: center;
+        }
+        
+        button .icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
         }
         
         button:focus-visible {
@@ -149,6 +166,10 @@
         body.frost button {
             background: rgba(0, 0, 0, 0.1);
             color: #1e293b;
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.08),
+                0 2px 4px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         
         body.gin button:focus-visible,
@@ -158,43 +179,42 @@
 
         button:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
+            box-shadow: 
+                0 6px 10px rgba(0, 0, 0, 0.12),
+                0 3px 5px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         body.gin button:hover,
         body.frost button:hover {
             background: rgba(0, 0, 0, 0.15);
+            box-shadow: 
+                0 6px 10px rgba(0, 0, 0, 0.1),
+                0 3px 5px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         button:active,
         button.pressed {
-            transform: translateY(0) !important;
+            transform: translateY(1px) scale(0.98) !important;
             background: rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.1),
+                inset 0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
         
         body.gin button.pressed,
-        body.frost button.pressed {
+        body.frost button.pressed,
+        body.gin button:active,
+        body.frost button:active {
             background: rgba(0, 0, 0, 0.2) !important;
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.08),
+                inset 0 2px 4px rgba(0, 0, 0, 0.08),
+                inset 0 1px 2px rgba(0, 0, 0, 0.04) !important;
         }
 
-        button.primary {
-            background: rgba(255, 255, 255, 0.3);
-            min-width: 120px;
-        }
-
-        body.gin button.primary,
-        body.frost button.primary {
-            background: rgba(0, 0, 0, 0.15);
-        }
-
-        button.primary:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        body.gin button.primary:hover,
-        body.frost button.primary:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
 
         .splits-section {
             display: none;
@@ -535,9 +555,30 @@
         </div>
 
         <div class="controls">
-            <button class="primary" id="startPauseBtn">START</button>
-            <button id="lapBtn" disabled>LAP</button>
-            <button id="stopBtn" disabled>RESET</button>
+            <button id="startPauseBtn">
+                <svg class="icon play" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 3L13 8L5 13V3Z" fill="currentColor"/>
+                </svg>
+                <svg class="icon pause" style="display: none;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="3" width="3" height="10" fill="currentColor"/>
+                    <rect x="9" y="3" width="3" height="10" fill="currentColor"/>
+                </svg>
+                <span>START</span>
+            </button>
+            <button id="lapBtn" disabled>
+                <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <path d="M8 3V8L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <span>LAP</span>
+            </button>
+            <button id="stopBtn" disabled>
+                <svg class="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.5 8C13.5 5 11 2.5 8 2.5S2.5 5 2.5 8 5 13.5 8 13.5c1.5 0 2.8-.6 3.8-1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                    <path d="M13.5 5V8H10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <span>RESET</span>
+            </button>
         </div>
 
         <div class="splits-section" id="splitsSection">
@@ -592,6 +633,53 @@
     </div>
 
     <script>
+        // Sound and haptic feedback system
+        class TactileFeedback {
+            constructor() {
+                this.audioContext = null;
+                this.initAudio();
+            }
+            
+            initAudio() {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.audioContext = new AudioContext();
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                }
+            }
+            
+            playClickSound(type = 'default') {
+                // Sounds removed - were annoying
+                return;
+            }
+            
+            vibrate(pattern = 10) {
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(pattern);
+                }
+            }
+            
+            trigger(type = 'default') {
+                // Only haptic feedback, no sounds
+                switch(type) {
+                    case 'start':
+                        this.vibrate(15);
+                        break;
+                    case 'lap':
+                        this.vibrate([5, 5, 5]);
+                        break;
+                    case 'reset':
+                        this.vibrate(20);
+                        break;
+                    default:
+                        this.vibrate(10);
+                }
+            }
+        }
+        
+        const tactileFeedback = new TactileFeedback();
+        
         // Theme management
         const themes = ['biscay', 'sky-blue', 'tangerine', 'gin', 'slate', 'charcoal', 'frost'];
         let currentThemeIndex = 1; // Default to sky-blue
@@ -695,11 +783,18 @@
 
         // Start/Pause timer
         function toggleTimer() {
+            tactileFeedback.trigger('start');
+            const playIcon = startPauseBtn.querySelector('.play');
+            const pauseIcon = startPauseBtn.querySelector('.pause');
+            const buttonText = startPauseBtn.querySelector('span');
+            
             if (isRunning) {
                 // Pause
                 isRunning = false;
                 cancelAnimationFrame(animationFrame);
-                startPauseBtn.textContent = 'RESUME';
+                buttonText.textContent = 'RESUME';
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
                 lapBtn.disabled = true;
             } else {
                 // Start/Resume
@@ -708,7 +803,9 @@
                 lapStartTime = now - lapElapsedTime;
                 isRunning = true;
                 updateDisplay();
-                startPauseBtn.textContent = 'PAUSE';
+                buttonText.textContent = 'PAUSE';
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
                 lapBtn.disabled = false;
                 stopBtn.disabled = false;
             }
@@ -717,6 +814,8 @@
         // Record lap
         function recordLap() {
             if (!isRunning) return;
+            
+            tactileFeedback.trigger('lap');
             
             laps.push({
                 number: laps.length + 1,
@@ -752,6 +851,8 @@
 
         // Stop/Reset timer
         function stopTimer() {
+            tactileFeedback.trigger('reset');
+            
             isRunning = false;
             cancelAnimationFrame(animationFrame);
             startTime = 0;
@@ -760,7 +861,13 @@
             lapElapsedTime = 0;
             laps = [];
             
-            startPauseBtn.textContent = 'START';
+            const playIcon = startPauseBtn.querySelector('.play');
+            const pauseIcon = startPauseBtn.querySelector('.pause');
+            const buttonText = startPauseBtn.querySelector('span');
+            buttonText.textContent = 'START';
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+            
             lapBtn.disabled = true;
             stopBtn.disabled = true;
             
@@ -801,9 +908,17 @@
             void button.offsetWidth;
             button.classList.add('pressed');
             
+            // Add a subtle bounce-back animation
             setTimeout(() => {
                 button.classList.remove('pressed');
-            }, 150);
+                button.style.transition = 'transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                button.style.transform = 'translateY(-1px) scale(1.02)';
+                
+                setTimeout(() => {
+                    button.style.transition = '';
+                    button.style.transform = '';
+                }, 200);
+            }, 100);
         }
 
         // Keyboard shortcuts
