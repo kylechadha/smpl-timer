@@ -164,6 +164,7 @@ let laps = [];
 
 // DOM elements
 const lapTimeEl = document.getElementById('lapTime');
+const lapMsEl = document.getElementById('lapMs');
 const totalTimeEl = document.getElementById('totalTime');
 const startPauseBtn = document.getElementById('startPauseBtn');
 const lapBtn = document.getElementById('lapBtn');
@@ -183,6 +184,11 @@ function formatTime(ms) {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+function formatMilliseconds(ms) {
+    const milliseconds = Math.floor((ms % 1000) / 10);
+    return `.${String(milliseconds).padStart(2, '0')}`;
+}
+
 // Update display using requestAnimationFrame for smooth performance
 function updateDisplay() {
     if (isRunning) {
@@ -192,11 +198,15 @@ function updateDisplay() {
         
         // Update both displays with the same calculated values
         const lapText = formatTime(lapElapsedTime);
+        const lapMsText = formatMilliseconds(lapElapsedTime);
         const totalText = `Total: ${formatTime(stopwatchElapsedTime)}`;
         
         // Update DOM only if values changed to prevent unnecessary repaints
         if (lapTimeEl.textContent !== lapText) {
             lapTimeEl.textContent = lapText;
+        }
+        if (lapMsEl.textContent !== lapMsText) {
+            lapMsEl.textContent = lapMsText;
         }
         if (totalTimeEl.textContent !== totalText) {
             totalTimeEl.textContent = totalText;
@@ -300,6 +310,7 @@ async function stopStopwatch() {
     stopBtn.disabled = true;
     
     lapTimeEl.textContent = formatTime(0);
+    lapMsEl.textContent = formatMilliseconds(0);
     totalTimeEl.textContent = `Total: ${formatTime(0)}`;
     splitsList.innerHTML = '';
     splitsSection.classList.remove('visible');

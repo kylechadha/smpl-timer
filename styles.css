@@ -71,12 +71,29 @@ body.frost .container {
     margin-bottom: 80px;
 }
 
+.lap-time-container {
+    display: inline-flex;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
 .lap-time {
     font-size: 12rem;
     font-weight: 200;
     line-height: 1;
-    margin-bottom: 20px;
     letter-spacing: -0.02em;
+    padding-left: 10px;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.lap-ms {
+    font-size: 6rem;
+    font-weight: 200;
+    opacity: 0.6;
+    margin-left: 8px;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
     transform: translateZ(0);

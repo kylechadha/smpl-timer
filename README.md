@@ -2,11 +2,14 @@
 
 A minimal stopwatch that displays the current lap time as the _primary_ display, with total elapsed time shown below. This is the opposite of how most stopwatches do it, and perfect for timing reading sessions or other use cases where the current lap matters more than the total.
 
+https://kylechadha.github.io/smpl-stopwatch/
+
 ## Features
 
 - **Lap time focus**: The main display shows time since the last lap, resetting to 00:00 with each lap press
 - **Total time**: Secondary display tracks total elapsed time
 - **Splits table**: Records lap number, duration, and cumulative time for each lap
+- **Screen Wake Lock API**: Keeps screen awake while stopwatch is running (prevents screen timeout on mobile)
 - **7 themes**: Biscay, Sky Blue, Tangerine, Gin, Slate, Charcoal, and Frost
 - **Keyboard shortcuts**:
   - `S` or `Space` - Start/Pause
