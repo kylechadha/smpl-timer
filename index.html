@@ -74,30 +74,43 @@
         }
 
         .timer-display {
-            margin-bottom: 60px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
         }
 
         .lap-time {
-            font-size: 8rem;
+            font-size: 12rem;
             font-weight: 200;
             line-height: 1;
-            margin-bottom: 15px;
-            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
             transition: all var(--transition-speed) ease;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
         }
 
         .total-time {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 200;
             opacity: 0.7;
             letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
         }
 
         .controls {
+            position: fixed;
+            top: calc(50% + 120px);
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-bottom: 60px;
+            z-index: 10;
         }
 
         button {
@@ -156,10 +169,35 @@
         }
 
         .splits-section {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 30vh;
+            overflow-y: auto;
             display: none;
-            margin-top: 60px;
             opacity: 0;
             transition: opacity var(--transition-speed) ease;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+
+        .splits-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .splits-section::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .splits-section::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        body.gin .splits-section::-webkit-scrollbar-thumb,
+        body.frost .splits-section::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .splits-section.visible {
@@ -203,6 +241,8 @@
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 1rem;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
         }
 
         body.gin .split-row,
@@ -250,16 +290,18 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: transparent;
-            display: none;
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             opacity: 0;
-            transition: opacity var(--transition-speed) ease;
+            visibility: hidden;
+            transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+            z-index: 1000;
         }
 
         .modal-backdrop.visible {
-            display: block;
             opacity: 1;
+            visibility: visible;
         }
 
         .modal {
@@ -276,6 +318,7 @@
             transition: right var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             padding: 40px 30px;
             overflow-y: auto;
+            z-index: 1001;
         }
 
         body.gin .modal,
@@ -384,13 +427,55 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        @media (max-width: 600px) {
+        /* Responsive scaling */
+        @media (min-width: 1920px) {
+            .lap-time {
+                font-size: 14rem;
+            }
+            .total-time {
+                font-size: 2rem;
+            }
+        }
+
+        @media (min-width: 2560px) {
+            .lap-time {
+                font-size: 16rem;
+            }
+            .total-time {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (min-width: 3440px) {
+            .lap-time {
+                font-size: 18rem;
+            }
+            .total-time {
+                font-size: 2.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .lap-time {
+                font-size: 7rem;
+            }
+            .total-time {
+                font-size: 1.4rem;
+            }
+            .controls {
+                top: calc(50% + 80px);
+            }
+        }
+
+        @media (max-width: 480px) {
             .lap-time {
                 font-size: 5rem;
             }
-
             .total-time {
                 font-size: 1.2rem;
+            }
+            .controls {
+                top: calc(50% + 60px);
             }
 
             button {
@@ -562,7 +647,8 @@
 
         // Update splits display
         function updateSplits() {
-            splitsList.innerHTML = laps.map(lap => `
+            // Show most recent lap at the top
+            splitsList.innerHTML = laps.slice().reverse().map(lap => `
                 <div class="split-row">
                     <div>${lap.number}</div>
                     <div>${formatTime(lap.duration)}</div>
